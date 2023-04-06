@@ -1,5 +1,5 @@
 const { removeTestDB, runMigrations } = require('./testUtils');
-const { Color } = require('./db/models');
+const { Colors } = require('./db/models');
 
 
 (async () => {
@@ -9,10 +9,10 @@ const { Color } = require('./db/models');
 
 
   // Expected validation output:
-  // Color.name cannot be null
+  // Colors.name cannot be null
   console.log('First Test - null value for name:')
   try {
-    await Color.create({})
+    await Colors.create({})
     console.log('Result: Invalid Data Allowed in DB (check your validations)\n')
   } catch (err) {
     err.errors.forEach(err => {
@@ -26,7 +26,7 @@ const { Color } = require('./db/models');
   // name cannot be an array or an object
   console.log('Second Test - non-string value for name:')
   try {
-    await Color.create({name: []})
+    await Colors.create({name: []})
     console.log('Result: Invalid Data Allowed in DB (check your validations)\n')
   } catch (err) {
     err.errors.forEach(err => {
@@ -40,7 +40,7 @@ const { Color } = require('./db/models');
   // Test: successfully added
   console.log('Third Test - valid name:')
   try {
-    await Color.create({name: 'orange'})
+    await Colors.create({name: 'orange'})
     console.log('Result: Successfully Allowed Valid Data\n')
   } catch (err) {
     err.errors.forEach(err => {
