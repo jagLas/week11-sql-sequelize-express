@@ -21,6 +21,15 @@ module.exports = {
         fact: 'They also managed to survive mass extinction events such as the ice age.',
         millimeters: 12 
       },
+      {
+        name: 'Patu Digua Spider',
+        description: ` Most of the spiders found around American homes are more helpful than harmful. This includes the smallest spider, the patu digua.
+
+        The patu digua lives around the Rio Digua river near the El Queremal, Valle del Cauca region of northern Colombia. They’re hard to spot as the males grow to be about only a third of a millimeter, smaller than even the head of a pin. Some believe there are even smaller arachnids crawling around somewhere. For example, the female Anapistula caecula of West Africa is about three one-hundredths of an inch and the males would likely be smaller. Generally, male spiders are smaller than the females.`,
+        territory: 'South America',
+        fact: 'They’re hard to spot as the males grow to be about only a third of a millimeter',
+        millimeters: .3 
+      }
     ])
   },
 
@@ -34,7 +43,8 @@ module.exports = {
 
     await queryInterface.bulkDelete('Insects', {
       name: [
-        'Western Pygmy Blue Butterfly'
+        'Western Pygmy Blue Butterfly',
+        'Patu Digua Spider'
       ]
     })
   }
