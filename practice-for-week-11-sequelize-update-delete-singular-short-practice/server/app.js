@@ -51,6 +51,18 @@ app.put('/puppies/:puppyId', async (req, res, next) => {
 // STEP 2: Delete a puppy by id
 app.delete('/puppies/:puppyId', async (req, res, next) => {
     // Your code here
+    const deletedPuppy = await Puppy.findByPk(req.params.puppyId);
+
+    if(!deletedPuppy) {
+        throw new Error('Puppy not found');
+    }
+
+    await deletedPuppy.destroy();
+
+    res.json({
+        message: "The puppy with the specified id has been deleted",
+        puppy: deletedPuppy
+    })
 })
 
 
