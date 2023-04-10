@@ -22,6 +22,9 @@ app.get('/puppies', async (req, res, next) => {
     let allPuppies;
 
     // Your code here
+    allPuppies = await Puppy.findAll({
+        order: ['name']
+    });
 
     res.json(allPuppies);
 });
@@ -34,7 +37,12 @@ app.get('/puppies/chipped', async (req, res, next) => {
     let chippedPuppies;
 
     // Your code here
-
+    chippedPuppies = await Puppy.findAll({
+        where: {
+            microchipped: true
+        },
+        order: [['age_yrs', 'DESC'], 'name']
+    })
     res.json(chippedPuppies);
 });
 
@@ -44,8 +52,12 @@ app.get('/puppies/chipped', async (req, res, next) => {
 // Finding one record by attribute
 app.get('/puppies/name/:name', async (req, res, next) => {
     let puppyByName;
-    
     // Your code here
+    puppyByName = await Puppy.findOne({
+        where: {
+            name: req.params.name
+        }
+    })
 
     res.json(puppyByName);
 })
@@ -58,19 +70,39 @@ app.get('/puppies/shepherds', async (req, res, next) => {
     let shepherds;
     
     // Your code here
-
+    shepherds = await Puppy.findAll({
+        where: {
+            breed: {
+                [Op.like]: '%Shepherd'
+            }
+        },
+        order: [['name', 'DESC']]
+    })
+    console.log(shepherds)
     res.json(shepherds);
 })
 
 
 // BONUS STEP 6
-// All puppies with age_yrs <= 1yr and weight_lbs <= 20lbs
+// All puppies with age_yrs < 1yr and weight_lbs < 20lbs
 // WHERE clause with multiple attributes and comparisons
 app.get('/puppies/tinybabies', async (req, res, next) => {
     let tinyBabyPuppies;
     
     // Your code here
-
+    tinyBabyPuppies = await Puppy.findAll({
+        where: {
+            [Op.and]: {
+                age_yrs: {
+                    [Op.lt]: 1
+                },
+                weight_lbs: {
+                    [Op.lt]: 20
+                }
+            }
+        },
+        order: ['age_yrs', 'weight_lbs']
+    })
     res.json(tinyBabyPuppies);
 })
 
@@ -82,8 +114,14 @@ app.get('/puppies/:id', async (req, res, next) => {
     let puppyById;
     
     // Your code here
+    puppyById = await Puppy.findByPk(req.params.id);
     
-    res.json(puppyById);
+    if(puppyById) {
+        res.json(puppyById);
+    } else {
+        next(new Error('No puppy found by that id'));
+    }
+
 });
 
 
