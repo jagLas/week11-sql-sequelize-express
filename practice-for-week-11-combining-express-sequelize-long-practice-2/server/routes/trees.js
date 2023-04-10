@@ -7,7 +7,6 @@ const router = express.Router();
  */
 // Your code here
 const {Tree} = require('../db/models')
-console.log(Tree)
 
 /**
  * INTERMEDIATE BONUS PHASE 1 (OPTIONAL), Step A:
@@ -195,10 +194,53 @@ router.delete('/:id', async (req, res, next) => {
 router.put('/:id', async (req, res, next) => {
     try {
         // Your code here
+        const updatedTree = await Tree.findByPk(req.params.id);
+        if (!updatedTree) {
+            const err = new Error();
+            err.status = 'not-found';
+            err.message = `Could not update tree ${req.params.id}`
+            err.details =  'Tree not found';
+            next(err);
+        }
+
+        const {id, name, location, height, size} = req.body;
+
+        if(id != updatedTree.id) {
+            const err = new Error();
+            err.status = 'error';
+            err.message = `Could not update tree`
+            err.details =  `${req.params.id} does not match ${id}`;
+            return next(err);
+        }
+
+        if (name) {
+            updatedTree.tree = name;
+        }
+
+        if(location) {
+            updatedTree.location = location;
+        }
+
+        if(height) {
+            updatedTree.heightFt = height;
+        }
+        
+        if (size) {
+            updatedTree.groundCircumferenceFt = size;
+        }
+
+        await updatedTree.save();
+
+        res.json({
+            status: "success",
+            message: "Successfully updated tree",
+            data: updatedTree
+        })
+
     } catch(err) {
         next({
             status: "error",
-            message: 'Could not update new tree',
+            message: 'Could not update tree',
             details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
         });
     }
