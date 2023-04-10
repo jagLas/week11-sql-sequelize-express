@@ -25,6 +25,24 @@ app.get('/puppies', async (req, res, next) => {
 // Respond to the request by sending a success message
 app.post('/puppies/build', async (req, res, next) => {
     // Your code here
+    try{
+        const newPuppy = await Puppy.build({
+            name: req.body.name,
+            age_yrs: req.body.age_yrs,
+            breed: req.body.breed,
+            weight_lbs: req.body.weight_lbs,
+            microchipped: req.body.microchipped
+        });
+
+        await newPuppy.save();
+
+        res.status(201).json({
+            message: "Recorded successfully saved",
+            data: newPuppy
+        })
+    } catch(err) {
+        next(err);
+    }
 })
 
 // STEP 2
@@ -34,6 +52,22 @@ app.post('/puppies/build', async (req, res, next) => {
 // Respond to the request by sending a success message
 app.post('/puppies/create', async (req, res, next) => {
     // Your code here
+    try{
+        const newPuppy = await Puppy.create({
+            name: req.body.name,
+            age_yrs: req.body.age_yrs,
+            breed: req.body.breed,
+            weight_lbs: req.body.weight_lbs,
+            microchipped: req.body.microchipped
+        });
+
+        res.status(201).json({
+            message: "Recorded successfully saved",
+            data: newPuppy
+        })
+    } catch(err) {
+        next(err);
+    }
 })
 
 
