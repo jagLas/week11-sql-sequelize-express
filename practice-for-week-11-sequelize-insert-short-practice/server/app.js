@@ -36,7 +36,7 @@ app.post('/puppies/build', async (req, res, next) => {
 
         await newPuppy.save();
 
-        res.status(201).json({
+        res.json({
             message: "Recorded successfully saved",
             data: newPuppy
         })
@@ -61,7 +61,7 @@ app.post('/puppies/create', async (req, res, next) => {
             microchipped: req.body.microchipped
         });
 
-        res.status(201).json({
+        res.json({
             message: "Recorded successfully saved",
             data: newPuppy
         })
