@@ -21,6 +21,30 @@ app.get('/puppies', async (req, res, next) => {
 // STEP 1: Update a puppy by id
 app.put('/puppies/:puppyId', async (req, res, next) => {
     // Your code here
+    const updatedPuppy = await Puppy.findByPk(req.params.puppyId);
+    if (!updatedPuppy){
+        throw new Error('Puppy not found');
+    }
+
+    const {age_yrs, weight_lbs, microchipped} = req.body;
+    if(age_yrs) {
+        updatedPuppy.set({age_yrs: age_yrs})
+    }
+
+    if(weight_lbs) {
+        updatedPuppy.set({weight_lbs: weight_lbs})
+    }
+
+    if(microchipped) {
+        updatedPuppy.set({microchipped: microchipped})
+    }
+
+    await updatedPuppy.save();
+
+    res.json({
+        message: 'Puppy successfully updated',
+        puppy: updatedPuppy
+    })
 })
 
 
