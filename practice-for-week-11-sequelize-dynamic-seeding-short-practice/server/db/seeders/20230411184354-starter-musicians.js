@@ -44,7 +44,11 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     for (let i = 0; i < bandMusicians.length; i++) {
       const {name, musicians} = bandMusicians[i];
-      const band = await Band.findOne({name: name});
+      const band = await Band.findOne({
+        where: {
+          name: name
+          }
+        });
       for (let i = 0; i < musicians.length; i++) {
         await band.createMusician(musicians[i]);
       }
@@ -57,7 +61,7 @@ module.exports = {
       const {musicians} = bandMusicians[i];
       console.log(musicians)
       for (let i = 0; i < musicians.length; i++) {
-        const musician = await Musician.findOne({name: musicians[i]})
+        const musician = await Musician.findOne({where: musicians[i]})
         await musician.destroy();
       }
     }
