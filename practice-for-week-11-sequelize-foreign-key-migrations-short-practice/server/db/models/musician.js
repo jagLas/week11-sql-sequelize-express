@@ -11,6 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Your code here
+      Musician.belongsTo(
+        models.Band,
+        {foreignKey: 'bandId',
+        //  onDelete: 'CASCADE',
+        //  hooks: true
+        }
+      )
     }
   };
   Musician.init({
