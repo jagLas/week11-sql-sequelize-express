@@ -18,6 +18,13 @@ module.exports = (sequelize, DataTypes) => {
         //  hooks: true
         }
       )
+
+      Musician.belongsToMany(
+        models.Instrument,
+        {through: 'MusicianInstrument',
+         foreignKey:'musicianId', otherKey: 'instrumentId'
+        }
+      )
     }
   };
   Musician.init({
