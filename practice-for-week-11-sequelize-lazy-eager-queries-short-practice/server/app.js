@@ -6,7 +6,7 @@ const app = express();
 require('dotenv').config();
 
 // Import the models used in these routes - DO NOT MODIFY
-const { Band, Musician } = require('./db/models');
+const { Band, Musician, Instrument } = require('./db/models');
 
 // Express using json - DO NOT MODIFY
 app.use(express.json());
@@ -64,10 +64,33 @@ app.get('/bands-eager', async (req, res, next) => {
     res.json(payload);
 });
 
+app.get('/musicians/:id', async (req, res, next)=> {
+    const payload = await Musician.findByPk(req.params.id, {
+        include: {
+            model: Instrument,
+            through: {attributes:[]}
+        }
+    })
+
+    res.json(payload)
+})
+
+app.get('/musicians', async (req, res, next)=> {
+    const payload = await Musician.findAll({
+        include: {
+            model: Instrument,
+            through: {attributes:[]}
+        }
+    })
+
+    res.json(payload)
+})
+
 // Root route - DO NOT MODIFY
 app.get('/', (req, res) => {
     res.json({
-        message: "API server is running"
+        message: "API server is running",
+        order: [['lastName'],[Instrument, 'type']]
     });
 });
 
