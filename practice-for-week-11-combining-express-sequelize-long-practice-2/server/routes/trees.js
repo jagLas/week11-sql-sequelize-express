@@ -7,6 +7,7 @@ const router = express.Router();
  */
 // Your code here
 const {Tree} = require('../db/models')
+const {Op} = require('sequelize')
 
 /**
  * INTERMEDIATE BONUS PHASE 1 (OPTIONAL), Step A:
@@ -259,7 +260,13 @@ router.put('/:id', async (req, res, next) => {
  */
 router.get('/search/:value', async (req, res, next) => {
     let trees = [];
-
+    trees = await Tree.findAll({
+        where: {
+            tree: {
+                [Op.like]: `%${req.params.value}%`
+            }
+        }
+    })
 
     res.json(trees);
 });
