@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import models - DO NOT MODIFY
-const { Insect, Tree } = require('../db/models');
+const { Insect, Tree, InsectTree } = require('../db/models');
 const { Op } = require("sequelize");
 
 /**
@@ -108,6 +108,65 @@ router.get('/insects-trees', async (req, res, next) => {
  *   - (Any others you think of)
  */
 // Your code here
+router.post('/associate-tree-insect', async (req, res, next) => {
+    try {
+        let {tree, insect} = req.body;
+        if (!tree && !insect) throw new Error('Tree and Insect missing in request')
+        if (!tree) throw new Error('Tree missing in request')
+        if (!insect) throw new Error('Insect missing in request')
 
+        if (tree.id) {
+            tree = await Tree.findByPk(tree.id)
+            if (!tree) throw new Error('Tree not found')
+        } else {
+            tree = await Tree.create({
+                tree: tree.name,
+                location: tree.location,
+                heightFt: tree.size,
+                groundCircumferenceFt: tree.size
+            })
+        }
+    
+        if (insect.id) {
+            insect = await Insect.findByPk(insect.id)
+            if (!insect) throw new Error('Insect not found')
+        } else {
+            insect = await Insect.create({
+                name: insect.name,
+                description: insect.description,
+                fact: insect.fact,
+                territory: insect.territory,
+                millimeters: insect.millimeters
+            })
+        }
+        
+        const associated = await InsectTree.findOne({
+            where: {
+                insectId: insect.id,
+                treeId: tree.id
+            }
+        })
+
+        if (associated) {
+            throw new Error(`Association already exists between ${tree.tree} and ${insect.name}`)
+        }
+
+        await insect.addTree(tree);
+
+        res.json({
+            status: "success",
+            message: "Successfully created association",
+            data: {
+                tree: tree,
+                insect: insect
+            }
+        })
+
+
+    } catch (err) {
+        next(err)
+    }
+
+})
 // Export class - DO NOT MODIFY
 module.exports = router;
