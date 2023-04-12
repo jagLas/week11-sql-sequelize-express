@@ -24,8 +24,20 @@ router.get('/trees-insects', async (req, res, next) => {
 
     trees = await Tree.findAll({
         attributes: ['id', 'tree', 'location', 'heightFt'],
+        include: {
+            model: Insect,
+            attributes: ['id', 'name'],
+            order: [['name']],
+            required: true,
+            through: {
+                attributes: []
+            }
+        },
+        order: [
+            ['tree'],
+            [Insect, 'name']
+        ]
     });
-
     res.json(trees);
 });
 
@@ -51,10 +63,17 @@ router.get('/insects-trees', async (req, res, next) => {
     });
     for (let i = 0; i < insects.length; i++) {
         const insect = insects[i];
+        const trees = await insect.getTrees({
+            attributes: ['id', 'tree'],
+            joinTableAttributes:[],
+            order: ['tree']
+        })
+
         payload.push({
             id: insect.id,
             name: insect.name,
             description: insect.description,
+            trees: trees
         });
     }
 
