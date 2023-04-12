@@ -8,6 +8,7 @@ require('express-async-errors');
 
 // Import the models used in these routes - DO NOT MODIFY
 const { Musician, Band, Instrument } = require('./db/models');
+const paginate = require('./paginate')
 
 // Express using json - DO NOT MODIFY
 app.use(express.json());
@@ -17,19 +18,21 @@ app.get('/musicians', async (req, res, next) => {
     // Parse the query params, set default values, and create appropriate
     // offset and limit values if necessary.
     // Your code here
-    const page = req.query.page || 1;
-    let size = req.query.size || 5;
-    let offset = (page - 1) * size;
-    if (page == 0) {
-        size = null;
-        offset = null;
-    }
+
+    //old code before dry
+    // const page = req.query.page || 1;
+    // let size = req.query.size || 5;
+    // let offset = (page - 1) * size;
+    // if (page == 0) {
+    //     size = null;
+    //     offset = null;
+    // }
 
     // Query for all musicians
     // Include attributes for `id`, `firstName`, and `lastName`
     // Include associated bands and their `id` and `name`
     // Order by musician `lastName` then `firstName`
-    const musicians = await Musician.findAll({ 
+    const musicians = await Musician.findAll(paginate({ 
         order: [['lastName'], ['firstName']], 
         attributes: ['id', 'firstName', 'lastName'],
         include: [{
@@ -37,11 +40,11 @@ app.get('/musicians', async (req, res, next) => {
             attributes: ['id', 'name']
         }],
         // add limit key-value to query
-        limit: size,
+        // limit: size, //old code before made dry
         // add offset key-value to query
         // Your code here
-        offset: offset
-    });
+        // offset: offset //old code before made dry
+    }, req.query));
 
     res.json(musicians)
 });
