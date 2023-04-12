@@ -60,17 +60,17 @@ app.get('/bands', async (req, res, next) => {
     // Include attributes for `id` and `name`
     // Include associated musicians and their `id`, `firstName`, and `lastName`
     // Order by band `name` then musician `lastName`
-    const bands = await Band.findAll({ 
+    const bands = await Band.findAll(paginate({ 
         order: [['name'], [Musician, 'lastName']], 
         attributes: ['id', 'name'],
         include: [{
             model: Musician,
             attributes: ['id', 'firstName', 'lastName']
-        }],
+        }]
         // add limit key-value to query
         // add offset key-value to query
         // Your code here
-    });
+    }, req.query));
 
     res.json(bands)
 });
@@ -88,7 +88,7 @@ app.get('/instruments', async (req, res, next) => {
     // Omit the MusicianInstruments join table attributes from the results
     // Include each musician's associated band and their `id` and `name`
     // Order by instrument `type`, then band `name`, then musician `lastName`
-    const instruments = await Instrument.findAll({ 
+    const instruments = await Instrument.findAll(paginate({ 
         order: [['type'], [Musician, Band, 'name'], [Musician, 'lastName']], 
         attributes: ['id', 'type'],
         include: [{
@@ -104,7 +104,7 @@ app.get('/instruments', async (req, res, next) => {
         // add limit key-value to query
         // add offset key-value to query
         // Your code here
-    });
+    }, req.query));
 
     res.json(instruments)
 });
