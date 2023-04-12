@@ -23,22 +23,27 @@ app.get('/toys', async (req, res, next) => {
 
     // A. Create an `allToys` variable that returns all toys
     // Your code here
+    const allToys = await Toy.findAll()
 
     // B. Create a `toysCount` variable that returns the total number of toy
     // records
     // Your code here
+    const toysCount = await Toy.count()
     
     // C. Create a `toysMinPrice` variable that returns the minimum price of all
     // the toys
     // Your code here
-    
+    const toysMinPrice = await Toy.min('price')
+
     // D. Create a `toysMaxPrice` variable that returns the maximum price of all
     // the toys
     // Your code here
+    const toysMaxPrice = await Toy.max('price')
 
     // E. Create a `toysSumPrice` variable that returns the sum of all of
     // the toy prices.
     // Your code here
+    const toysSumPrice = await Toy.sum('price')
 
     res.json({
         toysCount,
