@@ -31,7 +31,12 @@ app.get('/', (req, res) => {
 app.use((err, req, res, next) => {
     console.error(err);
     res.status(400);
-    res.json(err);
+    res.json({
+        error: 'Whoops',
+        message: err.message,
+        details: err.details,
+        trace: err.stack
+    });
 });
 
 // Custom 404 (path not defined) - DO NOT MODIFY
