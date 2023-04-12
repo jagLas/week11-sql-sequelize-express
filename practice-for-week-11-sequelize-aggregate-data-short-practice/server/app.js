@@ -63,20 +63,26 @@ app.get('/cats/:id/toys', async (req, res, next) => {
     const catToysAggregateData = await Cat.findByPk(req.params.id, {
         include: {
             model: Toy,
-            attributes: []
+            attributes: [],
+            through: {
+                attributes: []
+            }
         },
         attributes: [
             // Count all of this cat's toys, and display the value with a
             // key of `toyCount`
             // Your code here
+            [sequelize.fn("COUNT", sequelize.col("Toys.id")), 'countToys'],
 
             // Find the average price of this cat's toys, and display the
             // value with a key of `averageToyPrice`
             // Your code here
+            [sequelize.fn('AVG', sequelize.col('Toys.price')), 'avgPrice'],
 
             // Find the total price of this cat's toys, and display the
             // value with a key of `totalToyPrice`
             // Your code here
+            [sequelize.fn('SUM', sequelize.col('Toys.price')), 'sumPrice']
         ],
         raw: true
     });
@@ -94,11 +100,15 @@ app.get('/cats/:id/toys', async (req, res, next) => {
     // Add the `toyCount`, `averageToyPrice`, and `totalToyPrice` keys to the
     // catData object, with their aggregate values from `catToysAggregateData`
     // Your code here
+    const catData = cat.toJSON();
+    catData.toyCount = catToysAggregateData.countToys;
+    catData.averageToyPrice = catToysAggregateData.avgPrice;
+    catData.totalToyPrice = catToysAggregateData.sumPrice
 
 
     // After the steps above are complete, refactor the line below to only
     // display `catData`
-    res.json({ catToysAggregateData, cat });
+    res.json(catData);
 })
 
 
