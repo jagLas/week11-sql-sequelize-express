@@ -12,12 +12,36 @@ router.get('/', async (req, res, next) => {
 
     // Phase 2A: Use query params for page & size
     // Your code here
+  
+    let page = parseInt(req.query.page) || 1;
+    let size = parseInt(req.query.size) || 10;
+
+    if(isNaN(page)) {
+        // console.log('here')
+        page = 1;
+    }
+    if(isNaN(size)) {
+        size = 10;
+    }
 
     // Phase 2B: Calculate limit and offset
     // Phase 2B (optional): Special case to return all students (page=0, size=0)
     // Phase 2B: Add an error message to errorResult.errors of
         // 'Requires valid page and size params' when page or size is invalid
+
     // Your code here
+    if(page < 0 || size > 200) {
+        errorResult.errors.push({message: 'Requires valid page and size params'})
+    }
+
+    let offset = (page - 1) * size;
+    const pagination = {};
+    if (page != 0 || size != 0) {
+        pagination.offset = offset;
+        pagination.limit = size;
+    } else {
+        pagination.limit = null;
+    }
 
     // Phase 4: Student Search Filters
     /*
@@ -48,6 +72,13 @@ router.get('/', async (req, res, next) => {
 
 
     // Phase 2C: Handle invalid params with "Bad Request" response
+    if (errorResult.errors.length > 0) {
+        return res.status(400).json({
+            code: 400,
+            body: errorResult
+        })
+    }
+
     // Phase 3C: Include total student count in the response even if params were
         // invalid
         /*
@@ -70,12 +101,16 @@ router.get('/', async (req, res, next) => {
         // limits and offsets as a property of count on the result
         // Note: This should be a new query
 
+
     result.rows = await Student.findAll({
         attributes: ['id', 'firstName', 'lastName', 'leftHanded'],
         where,
         // Phase 1A: Order the Students search results
-        order: ['lastName', 'firstName']
+        order: ['lastName', 'firstName'],
+        limit: pagination.limit,
+        offset: pagination.offset
     });
+
 
     // Phase 2E: Include the page number as a key of page in the response data
         // In the special case (page=0, size=0) that returns all students, set
@@ -88,6 +123,8 @@ router.get('/', async (req, res, next) => {
             }
         */
     // Your code here
+    result.page = page;
+    if (result.page == 0) result.page = 1;
 
     // Phase 3B:
         // Include the total number of available pages for this query as a key
