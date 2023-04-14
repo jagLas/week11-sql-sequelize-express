@@ -159,10 +159,14 @@ app.patch('/authors/:authorId/books', async (req, res) => {
 
 
 // BONUS Step: Benchmark and Add Index
+// currently takes about 40ms
 // Examples:
     // GET /reviews?firstName=Daisy&lastName=Herzog
+    // 1-3ms
     // GET /reviews?firstName=Daisy
+    // 1-2ms
     // GET /reviews?lastName=Herzog
+    // 2ms
 app.get('/reviews', async (req, res) => {
     const { firstName, lastName } = req.query;
 
