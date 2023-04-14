@@ -167,6 +167,7 @@ app.patch('/authors/:authorId/books', async (req, res) => {
     // 1-2ms
     // GET /reviews?lastName=Herzog
     // 2ms
+// after creating index, each of these queries now takes 0-1ms
 app.get('/reviews', async (req, res) => {
     const { firstName, lastName } = req.query;
 
