@@ -15,6 +15,14 @@ router.get('/category/:categoryName', async (req, res, next) => {
         // Include Classroom in the supplies query results
         // Order nested classroom results by name first then by supply name
     // Your code here
+    const supplies = await Supply.findAll({
+        where: {
+            category: req.params.categoryName
+        },
+        order: ['name', 'handed']
+    })
+
+    res.json(supplies)
 });
 
 
