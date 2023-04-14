@@ -93,13 +93,43 @@ app.get('/books', async (req, res) => {
 
 
 // STEP #2: Benchmark and Refactor Another Query
+// before refactor runs in about 120ms. Could be refactored to update with a where clause
+// app.patch('/authors/:authorId/books', async (req, res) => {
+//     const author = await Author.findOne({
+//         include: { model: Book },
+//         where: {
+//             id: req.params.authorId
+//         }
+//     });
+
+//     if (!author) {
+//         res.status(404);
+//         return res.json({
+//             message: 'Unable to find an author with the specified authorId'
+//         });
+//     }
+
+//     for (let book of author.Books) {
+//         book.price = req.body.price;
+//         await book.save();
+//     }
+
+//     const books = await Book.findAll({
+//         where: {
+//             authorId: author.id
+//         }
+//     });
+
+//     res.json({
+//         message: `Successfully updated all authors.`,
+//         books
+//     });
+// });
+
+// after refactoring updating takes only 35ms
 app.patch('/authors/:authorId/books', async (req, res) => {
-    const author = await Author.findOne({
-        include: { model: Book },
-        where: {
-            id: req.params.authorId
-        }
-    });
+    console.log(req.params.authorId, req.body.price)
+    const author = await Author.findByPk(req.params.authorId);
 
     if (!author) {
         res.status(404);
@@ -108,15 +138,16 @@ app.patch('/authors/:authorId/books', async (req, res) => {
         });
     }
 
-    for (let book of author.Books) {
-        book.price = req.body.price;
-        await book.save();
-    }
+    await Book.update({price: req.body.price}, {
+        where: {
+            authorId: req.params.authorId
+        }
+    });
 
     const books = await Book.findAll({
-        where: {
-            authorId: author.id
-        }
+    where: {
+        authorId: req.params.authorId
+    }
     });
 
     res.json({
@@ -124,7 +155,6 @@ app.patch('/authors/:authorId/books', async (req, res) => {
         books
     });
 });
-
 
 
 
