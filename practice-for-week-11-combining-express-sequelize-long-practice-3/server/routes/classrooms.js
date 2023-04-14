@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import model(s)
-const { Classroom } = require('../db/models');
+const { Classroom, Supply, StudentClassroom, sequelize } = require('../db/models');
 const { Op } = require('sequelize');
 
 // List of classrooms
@@ -63,7 +63,7 @@ router.get('/:id', async (req, res, next) => {
 
     if (!classroom) {
         res.status(404);
-        res.send({ message: 'Classroom Not Found' });
+        return res.send({ message: 'Classroom Not Found' });
     }
 
     // Phase 5: Supply and Student counts, Overloaded classroom
@@ -76,6 +76,34 @@ router.get('/:id', async (req, res, next) => {
             // classroom
         // Optional Phase 5D: Calculate the average grade of the classroom 
     // Your code here
+    classroom.setDataValue('supplyCount', await Supply.count({
+        where: {
+            classroomId: parseInt(req.params.id)
+        }
+    }))
+
+    classroom.setDataValue('studentCount',
+        Object.keys(await classroom.getStudents()).length
+    )
+
+    const {studentLimit, studentCount} = classroom.dataValues
+
+    if (studentLimit < studentCount) {
+        classroom.setDataValue('overloaded', true)
+    } else {
+        classroom.setDataValue('overloaded', false)
+    }
+
+    const avg = await StudentClassroom.findOne({
+        where: {
+            classroomId: req.params.id
+        },
+        attributes: [
+            [sequelize.fn('AVG', sequelize.col('grade')), 'avgGrade']
+        ]
+    })
+
+    classroom.setDataValue('avgGrade', avg.dataValues.avgGrade)
 
     res.json(classroom);
 });
