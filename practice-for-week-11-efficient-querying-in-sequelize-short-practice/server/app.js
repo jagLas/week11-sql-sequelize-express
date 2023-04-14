@@ -36,32 +36,44 @@ app.get('/test-benchmark-logging', async (req, res) => {   // > 100 ms execution
 // STEP #1: Benchmark a Frequently-Used Query
 app.get('/books', async (req, res) => {
 
-    let books = await Book.findAll({
-        include: Author,
-    });
+    const query = {
+        include: Author
+    }
+
+    if(req.query.maxPrice) {
+        query.where = {
+            price: {
+                [Op.lte]: req.query.maxPrice
+            }
+        }
+    }
+    let books = await Book.findAll(query);
 
     // Filter by price if there is a maxPrice defined in the query params
-    if (req.query.maxPrice) {
-        books = books.filter(book => book.price < parseInt(req.query.maxPrice));
-    };
+    // if (req.query.maxPrice) {
+    //     books = books.filter(book => book.price < parseInt(req.query.maxPrice));
+    // };
     res.json(books);
 });
 
     // 1a. Analyze:
 
         // Record Executed Query and Baseline Benchmark Below:
-
+            
         // - What is happening in the code of the query itself?
-
-
+            // SELECT `Book`.`id`, `Book`.`authorId`, `Book`.`title`, `Book`.`description`, `Book`.`date`, `Book`.`price`, `Book`.`createdAt`, `Book`.`updatedAt`, `Book`.`AuthorId`, `Author`.`id` AS `Author.id`, `Author`.`firstName` AS `Author.firstName`, `Author`.`lastName` AS `Author.lastName`, `Author`.`email` AS `Author.email`, `Author`.`birthdate` AS `Author.birthdate`, `Author`.`createdAt` AS `Author.createdAt`, `Author`.`updatedAt` AS `Author.updatedAt` FROM `Books` AS `Book` LEFT OUTER JOIN `Authors` AS `Author` ON `Book`.`AuthorId` = `Author`.`id`;
+            // elapsed time: 80ms
         // - What exactly is happening as SQL executes this query? 
+            // QUERY PLAN
+            // |--SCAN TABLE Books AS Book
+            // `--SEARCH TABLE Authors AS Author USING INTEGER PRIMARY KEY (rowid=?)
  
-
-
 
 // 1b. Identify Opportunities to Make Query More Efficient
 
     // - What could make this query more efficient?
+    // having the sql filter the results instead of javascript
+    // indexing the Books table
 
 
 // 1c. Refactor the Query in GET /books
@@ -71,8 +83,10 @@ app.get('/books', async (req, res) => {
 // 1d. Benchmark the Query after Refactoring
 
     // Record Executed Query and Baseline Benchmark Below:
+    // SELECT `Book`.`id`, `Book`.`authorId`, `Book`.`title`, `Book`.`description`, `Book`.`date`, `Book`.`price`, `Book`.`createdAt`, `Book`.`updatedAt`, `Book`.`AuthorId`, `Author`.`id` AS `Author.id`, `Author`.`firstName` AS `Author.firstName`, `Author`.`lastName` AS `Author.lastName`, `Author`.`email` AS `Author.email`, `Author`.`birthdate` AS `Author.birthdate`, `Author`.`createdAt` AS `Author.createdAt`, `Author`.`updatedAt` AS `Author.updatedAt` FROM `Books` AS `Book` LEFT OUTER JOIN `Authors` AS `Author` ON `Book`.`AuthorId` = `Author`.`id` WHERE `Book`.`price` <= '50'; Elapsed time: 27ms
 
     // Is the refactored query more efficient than the original? Why or Why Not?
+    // yes because the filtering is happening during the sql query and not after by the javascript function
 
 
 

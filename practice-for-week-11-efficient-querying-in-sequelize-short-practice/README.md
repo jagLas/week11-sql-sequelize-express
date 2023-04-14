@@ -87,6 +87,8 @@ the `maxPrice` query parameter is included, the results for this query should
 display all of the associated data for each book that meets this price criteria,
 including the book's author, all reviews, and information about each reviewer.
 
+recorded time: about 70ms
+
 ### 1a: Benchmark and Analyze the Original Query
 
 - Navigate to `/books?maxPrice=50`, and look at what is logged to the console
