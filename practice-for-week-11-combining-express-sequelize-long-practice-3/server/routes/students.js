@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import model(s)
-const { Student } = require('../db/models');
+const { Student, Classroom, StudentClassroom} = require('../db/models');
 const { Op } = require("sequelize");
 
 // List
@@ -16,8 +16,7 @@ router.get('/', async (req, res, next) => {
     let page = parseInt(req.query.page) || 1;
     let size = parseInt(req.query.size) || 10;
 
-    if(isNaN(page)) {
-        // console.log('here')
+    if(isNaN(page)){
         page = 1;
     }
     if(isNaN(size)) {
@@ -121,9 +120,19 @@ router.get('/', async (req, res, next) => {
 
     result.rows = await Student.findAll({
         attributes: ['id', 'firstName', 'lastName', 'leftHanded'],
+        include: {
+            model: Classroom,
+            attributes: ['id', 'name'],
+            through: {
+                attributes: ['grade']
+            }
+        },
         where,
         // Phase 1A: Order the Students search results
-        order: ['lastName', 'firstName'],
+        order: [
+            [Classroom, StudentClassroom, 'grade', 'DESC'],
+            ['lastName'], ['firstName']
+        ],
         limit: pagination.limit,
         offset: pagination.offset
     });
