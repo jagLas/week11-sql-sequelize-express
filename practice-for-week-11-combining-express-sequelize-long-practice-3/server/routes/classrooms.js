@@ -71,12 +71,17 @@ router.get('/', async (req, res, next) => {
     }
 
     const classrooms = await Classroom.findAll({
-        attributes: [ 'id', 'name', 'studentLimit', [sequelize.fn('AVG', sequelize.col('grade')), 'avgGrade'] ],
+        attributes: [ 'id', 'name', 'studentLimit',
+            [sequelize.fn('AVG', sequelize.col('grade')), 'avgGrade'],
+            [sequelize.fn('COUNT', sequelize.col('grade')), 'numStudents']
+        ],
         where: where,
-        include: {
+        include: [
+            {
             model: StudentClassroom,
             attributes: []
-        },
+            }
+        ],
         // Phase 1B: Order the Classroom search results
         order: ['name'],
         group: ['classroomId']
