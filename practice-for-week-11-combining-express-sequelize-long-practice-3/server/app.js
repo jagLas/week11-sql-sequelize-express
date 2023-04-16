@@ -6,9 +6,13 @@ require('dotenv').config();
 // Instantiate Express and the application - DO NOT MODIFY
 const express = require('express');
 const app = express();
+const paginate = require('./utils/paginate')
 
 // Express using json - DO NOT MODIFY
 app.use(express.json());
+
+// middleware for pagination
+app.use(paginate)
 
 // Connect routers API - DO NOT MODIFY
 app.use('/', require('./routes/verification'));
