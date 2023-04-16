@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 
 // Import model(s)
-const { Supply, Classroom } = require('../db/models');
+const { Supply, Classroom, sequelize } = require('../db/models');
+const { where } = require('sequelize');
 
 // List of supplies by category
 router.get('/category/:categoryName', async (req, res, next) => {
@@ -43,6 +44,40 @@ router.get('/scissors/calculate', async (req, res, next) => {
             // "Safety Scissors" currently in all classrooms, regardless of
             // handed-ness
     // Your code here
+
+    //code implemented after 10 minutes failed to produce a result
+    // result.numRightyScissors = await Supply.count({
+    //     where: {
+    //         handed: 'right',
+    //         category: 'Cutting'
+    //     }
+    // })
+
+    // result.numLeftyScissors = await Supply.count({
+    //     where: {
+    //         handed: 'left',
+    //         category: 'Cutting'
+    //     }
+    // })
+
+    // result.totalNumScissors = await Supply.count({
+    //     where: {
+    //         category: 'Cutting'
+    //     }
+    // })
+
+    // better solution after more digging
+    let scissors = await Supply.findAll({
+        attributes:  ['handed',
+            [sequelize.fn('COUNT', sequelize.col('handed')), 'count'],
+        ],
+        group: [['handed']],
+        order: [['handed', 'DESC']]
+    })
+
+    result.numRightyScissors = scissors[0].dataValues.count;
+    result.numLeftyScissors = scissors[1].dataValues.count;
+    result.totalNumScissors = result.numLeftyScissors + result.numRightyScissors;
 
     // Phase 10B: Total number of right-handed and left-handed students in all
         // classrooms
