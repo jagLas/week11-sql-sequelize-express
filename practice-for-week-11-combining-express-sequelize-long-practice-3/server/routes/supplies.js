@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import model(s)
-const { Supply, Classroom, sequelize } = require('../db/models');
+const { Supply, Classroom, StudentClassroom, Student, sequelize } = require('../db/models');
 const { where } = require('sequelize');
 
 // List of supplies by category
@@ -93,6 +93,30 @@ router.get('/scissors/calculate', async (req, res, next) => {
         // result.numLeftHandedStudents should equal the total number of
             // left-handed students in all classrooms
     // Your code here
+
+    result.numRightHandedStudents = await StudentClassroom.count({
+        include: 
+            {
+                model: Student,
+                attributes: [],
+                where: {
+                    leftHanded: false
+                }
+            }
+        
+    })
+
+    result.numLeftHandedStudents = await StudentClassroom.count({
+        include: 
+            {
+                model: Student,
+                attributes: [],
+                where: {
+                    leftHanded: true
+                }
+            }
+        
+    })
 
     // Phase 10C: Total number of scissors still needed for all classrooms
         // result.numRightyScissorsStillNeeded should equal the total number
